@@ -52,6 +52,19 @@ app.get("/get-customer/:customerId", async (req, res) => {
     res.status(500).send({ message: "Error retrieving customer" });
   }
 });
+app.get("/get-customer-cards/:customerId", async (req, res) => {
+  try {
+    const customer = await stripe.customers.retrieve(req.params.customerId);
+    const cards = await stripe.customers.listSources(customer.id, {
+      object: "card"
+    });
+    console.log("Cards retrieved successfully:", cards.data);
+    res.send({ message: "Cards retrieved successfully", cards: cards.data });
+  } catch (error) {
+    console.error("Error retrieving cards:", error);
+    res.status(500).send({ message: "Error retrieving cards" });
+  }
+});
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
