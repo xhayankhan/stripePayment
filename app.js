@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
-const stripe = require("stripe")("YOUR_STRIPE_SECRET_KEY");
+const stripe = require("stripe")("sk_test_51InumCJNs8MZJzppyvx0VDvVS0bmEg0vyRUjUpyQGeB7TKW4YROG9PjSgTIH061ImZV6Qr9CDZRuXJak7hqAzyDF00SJjXBtGu");
 
 const app = express();
 app.use(bodyParser.json());
