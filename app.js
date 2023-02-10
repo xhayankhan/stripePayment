@@ -13,10 +13,10 @@ async function saveCard(token, customerId) {
     });
     console.log("Credit card saved successfully:", card.id);
 
-    const response = await axios.post("/save-card", {
-      cardId: card.id,
-      customerId: customerId
-    });
+    // const response = await axios.post("/save-card", {
+    //   cardId: card.id,
+    //   customerId: customerId
+    // });
     console.log("Credit card information saved on the server:", response.data);
   } catch (error) {
     console.error("Error saving credit card:", error);
@@ -27,6 +27,22 @@ app.post("/save-card", async (req, res) => {
   const { token, customerId } = req.body;
   await saveCard(token, customerId);
   res.send({ message: "Credit card saved successfully" });
+});
+app.post("/create-charge", async (req, res) => {
+  try {
+    const charge = await stripe.charges.create({
+      amount: req.body.amount,
+      currency: req.body.currency,
+      customer:req.body.customer,
+      source: req.body.source,
+      description: req.body.description
+    });
+    console.log("Charge created successfully:", charge);
+    res.send({ message: "Charge created successfully", charge });
+  } catch (error) {
+    console.error("Error creating charge:", error);
+    res.status(500).send({ message: "Error creating charge" });
+  }
 });
 app.post("/create-customer", async (req, res) => {
   try {
