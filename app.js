@@ -29,7 +29,7 @@ app.post("/save-card", async (req, res) => {
   res.send({ message: "Credit card saved successfully" });
 });
 
-app.post("/withdraw"),async(req,res)=>{
+app.post("/withdraw", async (req,res)=>{
 
   try {
     const transfer = await stripe.transfers.create({
@@ -45,6 +45,7 @@ app.post("/withdraw"),async(req,res)=>{
     res.status(500).send({ message: "Error creating withdrawal to card" });
   }
 }
+);
 app.post("/create-charge", async (req, res) => {
   try {
     const charge = await stripe.charges.create({
