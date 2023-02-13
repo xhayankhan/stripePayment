@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 async function saveCard(token, customerId) {
   try {
     const card = await stripe.customers.createSource(customerId, {
-      source: token
+      source: token,
     });
     console.log("Credit card saved successfully:", card.id);
 
@@ -28,6 +28,27 @@ app.post("/save-card", async (req, res) => {
   await saveCard(token, customerId);
   res.send({ message: "Credit card saved successfully" });
 });
+
+app.post("/with-draw"),async(req,res)=>{
+  try{
+    await stripe.payouts.create({
+      amount: req.body.amount,
+      currency: "usd",
+      destination: req.body.destination
+    }, function(err, payout) {
+      if (err) {
+        console.log("Error:", err);
+      res.status(400).json({"Error":"Payment unsuccessful"});
+      } else {
+        console.log("Payout created:", payout.id);
+        res.status(200).json({"message":"Payment successful","paymentId":payout.id});
+      }
+    });
+  }
+  catch (e){
+    throw e;
+  }
+}
 app.post("/create-charge", async (req, res) => {
   try {
     const charge = await stripe.charges.create({
