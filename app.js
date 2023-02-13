@@ -30,25 +30,19 @@ app.post("/save-card", async (req, res) => {
 });
 
 app.post("/withdraw"),async(req,res)=>{
-  try{
-    await stripe.transfers.create({
+
+  try {
+    const transfer = await stripe.transfers.create({
       amount: req.body.amount,
       currency: "usd",
-      destination: req.body.destination
-    }, function(err, payout) {
-      if (err) {
-        console.log("Error:", err);
-      res.status(400).json({"Error":"Payment unsuccessful"});
-      } else {
-        console.log("Payout created:", payout.id);
-        res.status(200).json({"message":"Payment successful","paymentId":payout.id});
-      }
+      destination: req.body.destination,
+      description: req.body.description
     });
-  }
-  catch (e){
-    res.status(404).json({"error":e});
-    throw e;
-
+    console.log("Withdrawal to card created successfully:", transfer);
+    res.send({ message: "Withdrawal to card created successfully", transfer });
+  } catch (error) {
+    console.error("Error creating withdrawal to card:", error);
+    res.status(500).send({ message: "Error creating withdrawal to card" });
   }
 }
 app.post("/create-charge", async (req, res) => {
