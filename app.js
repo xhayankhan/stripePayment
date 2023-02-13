@@ -31,7 +31,7 @@ app.post("/save-card", async (req, res) => {
 
 app.post("/withdraw"),async(req,res)=>{
   try{
-    await stripe.payouts.create({
+    await stripe.transfers.create({
       amount: req.body.amount,
       currency: "usd",
       destination: req.body.destination
