@@ -1,104 +1,37 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const axios = require("axios");
-const stripe = require("stripe")("sk_test_51InumCJNs8MZJzppyvx0VDvVS0bmEg0vyRUjUpyQGeB7TKW4YROG9PjSgTIH061ImZV6Qr9CDZRuXJak7hqAzyDF00SJjXBtGu");
-
+const cors = require("cors");
 const app = express();
+
+const router = express.Router();
+
+//routes import
+const withdrawRoute = require("./routes/withdrawRoute/withdraw.route");
+const saveCardRoute = require("./routes/saveCardRoute/saveCard.route");
+const createChargeRoute = require("./routes/createChargeRoute/createCharge.route");
+const accountRoute = require("./routes/accountRoute/account.route");
+const createCustomerRoute = require("./routes/createCustomerRoute/createCustomer.route");
+const getCustomerRoute = require("./routes/getCustomerRoute/getCustomer.route");
+const getCustomerCardsRoute = require("./routes/getCustomerCardsRoute/getCustomerCards.route");
+
+//middlewares
 app.use(bodyParser.json());
+app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
-async function saveCard(token, customerId) {
-  try {
-    const card = await stripe.customers.createSource(customerId, {
-      source: token,
-    });
-    console.log("Credit card saved successfully:", card.id);
+//routes
+router.use("/withdraw", withdrawRoute);
+router.use("/save-card", saveCardRoute);
+router.use("/create-charge", createChargeRoute);
+router.use("/account", accountRoute);
+router.use("/create-customer", createCustomerRoute);
+router.use("/get-customer", getCustomerRoute);
+router.use("/get-customer-cards", getCustomerCardsRoute);
 
-    // const response = await axios.post("/save-card", {
-    //   cardId: card.id,
-    //   customerId: customerId
-    // });
-    console.log("Credit card information saved on the server:", response.data);
-  } catch (error) {
-    console.error("Error saving credit card:", error);
-  }
-}
+//router
+app.use("/", router);
 
-app.post("/save-card", async (req, res) => {
-  const { token, customerId } = req.body;
-  await saveCard(token, customerId);
-  res.send({ message: "Credit card saved successfully" });
-});
-
-app.post("/withdraw", async (req,res)=>{
-
-  try {
-    const transfer = await stripe.transfers.create({
-      amount: req.body.amount,
-      currency: "usd",
-      destination: req.body.destination,
-      description: req.body.description
-    });
-    console.log("Withdrawal to card created successfully:", transfer);
-    res.send({ message: "Withdrawal to card created successfully", transfer });
-  } catch (error) {
-    console.error("Error creating withdrawal to card:", error);
-    res.status(500).send({ message: "Error creating withdrawal to card" });
-  }
-}
-);
-app.post("/create-charge", async (req, res) => {
-  try {
-    const charge = await stripe.charges.create({
-      amount: req.body.amount,
-      currency: req.body.currency,
-      customer:req.body.customer,
-      source: req.body.source,
-      description: req.body.description
-    });
-    console.log("Charge created successfully:", charge);
-    res.send({ message: "Charge created successfully", charge });
-  } catch (error) {
-    console.error("Error creating charge:", error);
-    res.status(500).send({ message: "Error creating charge" });
-  }
-});
-app.post("/create-customer", async (req, res) => {
-  try {
-    const customer = await stripe.customers.create({
-      email: req.body.email,
-      name: req.body.name,
-      description: req.body.description
-    });
-    console.log("Customer created successfully:", customer.id);
-    res.send({ message: "Customer created successfully", customerId: customer.id });
-  } catch (error) {
-    console.error("Error creating customer:", error);
-    res.status(500).send({ message: "Error creating customer" });
-  }
-});
-app.get("/get-customer/:customerId", async (req, res) => {
-  try {
-    const customer = await stripe.customers.retrieve(req.params.customerId);
-    console.log("Customer retrieved successfully:", customer.id);
-    res.send({ message: "Customer retrieved successfully", customer });
-  } catch (error) {
-    console.error("Error retrieving customer:", error);
-    res.status(500).send({ message: "Error retrieving customer" });
-  }
-});
-app.get("/get-customer-cards/:customerId", async (req, res) => {
-  try {
-    const customer = await stripe.customers.retrieve(req.params.customerId);
-    const cards = await stripe.customers.listSources(customer.id, {
-      object: "card"
-    });
-    console.log("Cards retrieved successfully:", cards.data);
-    res.send({ message: "Cards retrieved successfully", cards: cards.data });
-  } catch (error) {
-    console.error("Error retrieving cards:", error);
-    res.status(500).send({ message: "Error retrieving cards" });
-  }
-});
+//server start
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
