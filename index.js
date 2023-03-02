@@ -24,6 +24,8 @@ const getCustomerCardsRoute = require("./routes/getCustomerCardsRoute/getCustome
 
 const createdAccountRoute = require("./routes/createdAccountRoute/createdAccount.route");
 
+const accountRoute = require("./routes/updateAccountRoute/account.route")
+
 //middlewares
 app.use(express.static(process.env.STATIC_DIR));
 app.use(
@@ -45,6 +47,7 @@ router.use("/get-customer", getCustomerRoute);
 router.use("/get-customer-cards", getCustomerCardsRoute);
 router.use("/withdraw", withdrawRoute);
 router.use("/accountCreated", createdAccountRoute);
+router.use("/card", accountRoute);
 //server
 app.use("/api", router);
 
