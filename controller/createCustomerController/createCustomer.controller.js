@@ -1,4 +1,4 @@
-const stripe = require("../../settings/settings");
+const { stripe } = require("../../setting/setting");
 const httpCreateCustomerHandler = async (req, res) => {
   try {
     const customer = await stripe.customers.create({

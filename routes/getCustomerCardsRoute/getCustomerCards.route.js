@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const httpGetCustomerCardsHandler = require("../../controllers/getCustomerCardsController/getCustomerCards.controller");
+const httpGetCustomerCardsHandler = require("../../controller/getCustomerCardsController/getCustomerCards.controller");
 
 router.get("/:customerId", httpGetCustomerCardsHandler);
 

@@ -1,14 +1,11 @@
-const stripe = require("../settings/settings");
+const { stripe } = require("../../setting/setting");
 
-const withdrawal = async (accountId, amount, res) => {
+const httpPostWithdrawal = async (req, res) => {
+  const { accountId, amount } = req.body;
   try {
     const balance = await stripe.balance.retrieve();
     console.log(balance);
-    // const payout = await stripe.payouts.create({
-    //   amount: amount,
-    //   currency: "usd",
-    //   source_type: "card",
-    // });
+
     const transfer = await stripe.transfers.create({
       amount: amount,
       currency: "usd",
@@ -45,4 +42,4 @@ const withdrawal = async (accountId, amount, res) => {
   }
 };
 
-module.exports = withdrawal;
+module.exports = httpPostWithdrawal;
