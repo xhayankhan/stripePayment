@@ -13,39 +13,45 @@ async function httpPostUpdateCardHandler(req, res) {
     cvc:""
   }
   */
+  // try {
+  //   await stripe.accounts.deleteExternalAccount(accountId, cardId);
+  //   try {
+  //     const token = stripe.tokens.create({
+  //       card: {
+  //         number: card.number ?? "4000056655665556",
+  //         exp_month: card.expiryMonth ?? 2,
+  //         exp_year: card.expiryYear ?? 2024,
+  //         cvc: card.cvc ?? "314",
+  //         currency: "usd",
+  //       },
+  //     });
+  //     try {
+  //       stripe.accounts.createExternalAccount(accountId, {
+  //         external_account: token.id,
+  //       });
+  //     } catch (e) {
+  //       res.status(400).json({
+  //         e: "Couldn't update card!",
+  //         acctualErr: e,
+  //       });
+  //     }
+  //   } catch (e) {
+  //     res.status(400).json({
+  //       e: "Couldn't update card!",
+  //       acctualErr: e,
+  //     });
+  //   }
+  // } catch (e) {
+  //   res.status(400).json({
+  //     e: "Couldn't update card!",
+  //     acctualErr: e,
+  //   });
+  // }
   try {
-    await stripe.accounts.deleteExternalAccount(accountId, cardId);
-    try {
-      const token = stripe.tokens.create({
-        card: {
-          number: card.number ?? "4000056655665556",
-          exp_month: card.expiryMonth ?? 2,
-          exp_year: card.expiryYear ?? 2024,
-          cvc: card.cvc ?? "314",
-          currency: "usd",
-        },
-      });
-      try {
-        stripe.accounts.createExternalAccount(accountId, {
-          external_account: token.id,
-        });
-      } catch (e) {
-        res.status(400).json({
-          e: "Couldn't update card!",
-          acctualErr: e,
-        });
-      }
-    } catch (e) {
-      res.status(400).json({
-        e: "Couldn't update card!",
-        acctualErr: e,
-      });
-    }
+    const loginLink = await stripe.accounts.createLoginLink(accountId);
+    res.status(200).json({ url: loginLink.url });
   } catch (e) {
-    res.status(400).json({
-      e: "Couldn't update card!",
-      acctualErr: e,
-    });
+    res.status(400).json({ error: "Invalid account id!", actualErr: e });
   }
 }
 module.exports = httpPostUpdateCardHandler;

@@ -2,7 +2,9 @@ const { stripe } = require("../../setting/setting");
 const generateAccountLink = require("../../handlers/generateAccountLink");
 const httpPostOnBoardAccount = async (req, res) => {
   try {
-    const account = await stripe.accounts.create({ type: "express" });
+    const account = await stripe.accounts.create({
+      type: "express",
+    });
     req.session.accountID = account.id;
     req.session.uID = req.body.uid;
 
