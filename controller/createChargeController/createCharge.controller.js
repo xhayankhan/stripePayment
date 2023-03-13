@@ -1,4 +1,4 @@
-const {stripe} = require("../../settings/settings");
+const {stripe} = require("../../setting/setting");
 const httpPostCreateChargeHandler = async (req, res) => {
   try {
     const charge = await stripe.charges.create({
