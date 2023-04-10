@@ -69,7 +69,7 @@ router.use("/withdraw", withdrawRoute);
 router.use("/accountCreated", createdAccountRoute);
 router.use("/card", accountRoute);
 router.use("/account-success", (req, res) => {
-  const file = path.join("public", "success.html");
+  const file = path.join(__dirname, "public", "success.html");
   res.sendFile(file);
 });
 //server
