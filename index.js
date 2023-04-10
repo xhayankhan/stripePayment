@@ -5,7 +5,17 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
+const https =require("https");
+const fs = require("fs");
 const { stripe } = require("./setting/setting");
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/api.hailocare.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/api.hailocare.com/fullchain.pem', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+};
 
 const router = express.Router();
 
@@ -38,7 +48,12 @@ app.use(
 );
 app.use(cors());
 app.use(express.json());
-
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect(['https://', req.get('Host'), req.url].join(''));
+  }
+  next();
+});
 //routes
 router.use("/onboard-user", onboardUserRoute);
 router.use("/save-card", saveCardRoute);
@@ -100,5 +115,7 @@ app.post(
   }
 );
 
+const httpsServer = https.createServer(credentials, app);
+
 const port = process.env.PORT || 4242;
-app.listen(port, () => console.log(`Node server listening on port ${port}!`));
+httpsServer.listen(port, () => console.log(`Node server listening on port ${port}!`));
